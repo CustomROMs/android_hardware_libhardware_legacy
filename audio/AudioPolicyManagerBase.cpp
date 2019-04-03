@@ -968,19 +968,34 @@ audio_io_handle_t AudioPolicyManagerBase::getInput(int inputSource,
                                     &inputDesc->mFormat,
                                     &inputDesc->mChannelMask);
 
+    ALOGE("getInput() opening input %d: samplingRate %d, format %d, channelMask 0x%X",
+             input, samplingRate, format, channelMask);
+
+
     // only accept input with the exact requested set of parameters
     if (input == 0 ||
         (samplingRate != inputDesc->mSamplingRate) ||
         (format != inputDesc->mFormat) ||
         (channelMask != inputDesc->mChannelMask)) {
-        ALOGI("getInput() failed opening input: samplingRate %d, format %d, channelMask 0x%X",
+        if (input == 0)
+            ALOGE("getInput() failed opening input 0: samplingRate %d, format %d, channelMask 0x%X",
                 samplingRate, format, channelMask);
+        else if (samplingRate != inputDesc->mSamplingRate)
+            ALOGE("getInput() failed opening input: samplingRate %d != inputDesc->mSamplingRate %d", samplingRate, inputDesc->mSamplingRate);
+        else if (format != inputDesc->mFormat)
+            ALOGE("getInput() failed opening input: format %d != inputDesc->mFormat %d", format, inputDesc->mFormat);
+        else if (channelMask != inputDesc->mChannelMask)
+            ALOGE("getInput() failed opening input: channelMask 0x%X != inputDesc->mChannelMask 0x%X", channelMask, inputDesc->mChannelMask);
+     }
+
+#if 0
         if (input != 0) {
             mpClientInterface->closeInput(input);
         }
         delete inputDesc;
         return 0;
     }
+#endif
     addInput(input, inputDesc);
 
     return input;
